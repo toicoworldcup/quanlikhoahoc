@@ -6,6 +6,7 @@ import org.example.ex.entity.Student;
 import org.example.ex.entity.Topic;
 import org.example.ex.export.StudentExcelExporter;
 import org.example.ex.repository.StudentRepository;
+import org.example.ex.service.StudentImportService;
 import org.example.ex.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,9 @@ public class StudentController {
     private StudentService studentService;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private StudentImportService studentImportService;
+
     @GetMapping
     public ResponseEntity<List<Student>> getAllStudents() {
         return ResponseEntity.ok(studentService.getAllStudents());
@@ -49,6 +53,12 @@ public class StudentController {
         List<Student> studentList = studentRepository.findAll();
         StudentExcelExporter excelExporter = new StudentExcelExporter(studentList);
         excelExporter.export(response);
+    }
+
+    @PostMapping("/import")
+    public String importStudentsFromExcel(@RequestParam String filePath) {
+        studentImportService.importStudentsFromExcel(filePath);
+        return "✅ Import file Excel thành công!";
     }
 
 

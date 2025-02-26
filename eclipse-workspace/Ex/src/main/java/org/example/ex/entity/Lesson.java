@@ -3,6 +3,10 @@ package org.example.ex.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name="lesson")
 public class Lesson {
@@ -13,26 +17,27 @@ public class Lesson {
     private String name;
     @Column(name="description")
     private String description;
-    @Column(name="score")
-    private double score;
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = true)
     @JsonIgnore
 
     private Course course;
+    @OneToMany(mappedBy = "lesson")
+    private List<Score> scores;
 
-    public Lesson(Course course, String description, int id, String name, double score) {
+
+
+    public Lesson(Course course, String description, int id, String name) {
         this.course = course;
         this.description = description;
         this.id = id;
         this.name = name;
-        this.score = score;
     }
 
-    public Lesson(String description, String name, double score) {
+
+    public Lesson(String description, String name) {
         this.description = description;
         this.name = name;
-        this.score = score;
     }
 
     public Lesson() {
@@ -70,11 +75,4 @@ public class Lesson {
         this.name = name;
     }
 
-    public double getScore() {
-        return score;
-    }
-
-    public void setScore(double score) {
-        this.score = score;
-    }
 }

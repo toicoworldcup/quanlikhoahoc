@@ -5,6 +5,7 @@ import org.example.ex.entity.*;
 import org.example.ex.export.TeacherExcelExporter;
 import org.example.ex.repository.TeacherRepository;
 import org.example.ex.service.StudentService;
+import org.example.ex.service.TeacherImportService;
 import org.example.ex.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ public class TeacherController {
     private TeacherService teacherService;
     @Autowired
     private TeacherRepository teacherRepository;
+    @Autowired
+    private TeacherImportService teacherImportService;
+
     @GetMapping
     public ResponseEntity<List<Teacher>> getAllTeachers() {
         return ResponseEntity.ok(teacherService.getAllTeachers());
@@ -35,6 +39,12 @@ public class TeacherController {
     @PutMapping("/{id}")
     public ResponseEntity<Teacher> updateTeacher(@PathVariable int id, @RequestBody Teacher teacher) {
         return ResponseEntity.ok(teacherService.updateStudent(id, teacher));
+    }
+
+    @PostMapping("/import")
+    public String importTeachersFromExcel(@RequestParam String filePath) {
+        teacherImportService.importTeachersFromExcel(filePath);
+        return "✅ Import file Excel thành công!";
     }
 
     @DeleteMapping("/{id}")

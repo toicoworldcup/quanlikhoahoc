@@ -46,7 +46,6 @@ public class LessonExcelExporter {
             row.createCell(0).setCellValue(lesson.getId());
             row.createCell(1).setCellValue(lesson.getName());
             row.createCell(2).setCellValue(lesson.getDescription());
-            row.createCell(3).setCellValue(lesson.getScore());
             row.createCell(4).setCellValue(
                     lesson.getCourse() != null ? lesson.getCourse().getId() : null
             );

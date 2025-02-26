@@ -6,6 +6,7 @@ import org.example.ex.entity.Student;
 import org.example.ex.entity.Topic;
 import org.example.ex.export.TopicExcelExporter;
 import org.example.ex.repository.TopicRepository;
+import org.example.ex.service.TopicImportService;
 import org.example.ex.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,8 @@ public class TopicController {
     private TopicService topicService;
     @Autowired
     private TopicRepository topicRepository;
+    @Autowired
+    private TopicImportService topicImportService;
 
     // Lấy tất cả chủ đề
     @GetMapping
@@ -79,6 +82,14 @@ public class TopicController {
         Topic updatedTopic = topicService.addCourseToTopic(topicId, courseId);
         return ResponseEntity.ok(updatedTopic);
     }
+
+    @PostMapping("/import")
+    public String importTopicsFromExcel(@RequestParam String filePath) {
+        topicImportService.importTopicsFromExcel(filePath);
+        return "✅ Import file Excel thành công!";
+    }
+
+
     @GetMapping("/export/excel")
     public void exportToExcel(HttpServletResponse response) throws IOException {
         response.setContentType("application/octet-stream");

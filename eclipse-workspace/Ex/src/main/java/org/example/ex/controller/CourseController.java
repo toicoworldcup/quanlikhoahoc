@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.ex.entity.*;
 import org.example.ex.export.CourseExcelExporter;
 import org.example.ex.repository.CourseRepository;
+import org.example.ex.service.CourseImportService;
 import org.example.ex.service.CourseService;
 import org.example.ex.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,15 @@ public class CourseController {
 
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private CourseImportService courseImportService;
+
+    @PostMapping("/import")
+    public String importCoursesFromExcel(@RequestParam String filePath) {
+        courseImportService.importCoursesFromExcel(filePath);
+        return "✅ Import file Excel thành công!";
+    }
 
     // Lấy tất cả chủ đề
     @GetMapping

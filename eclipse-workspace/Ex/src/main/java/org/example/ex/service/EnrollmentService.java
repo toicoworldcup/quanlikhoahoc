@@ -14,6 +14,8 @@ public class EnrollmentService {
     private EnrollmentRepository enrollmentRepository;
     @Autowired StudentRepository studentRepository;
     @Autowired CourseRepository courseRepository;
+    @Autowired
+    private LessonRepository lessonRepository;
 
     public List<Enrollment> getAllEnrollments() {
         return enrollmentRepository.findAll();
@@ -59,6 +61,9 @@ public class EnrollmentService {
             throw new RuntimeException("Không tìm thấy don dang ki với ID: " + id);
         }
     }
+
+
+
 
 
 

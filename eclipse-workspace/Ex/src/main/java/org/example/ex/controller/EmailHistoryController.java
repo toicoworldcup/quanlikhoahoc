@@ -41,8 +41,14 @@ public class EmailHistoryController {
     }
     @PostMapping("/send")
     public EmailHistory addEmailHistory(@RequestBody EmailHistory emailHistory) {
-        emailHistory.setSendTime(LocalDateTime.now());  // ⏰ Thêm thời gian gửi
+        emailHistory.setSendTime(LocalDateTime.now());  //
         return emailHistoryService.addEmailHistory(emailHistory);
+    }
+    // 🌟 API gửi email danh sách điểm theo enrollmentId
+    @PostMapping("/send-score-report/{enrollmentId}")
+    public String sendScoreReport(@PathVariable int enrollmentId) {
+        emailHistoryService.sendScoreReportByEnrollment(enrollmentId);
+        return "📩 Báo cáo điểm đã được gửi thành công!";
     }
 
 

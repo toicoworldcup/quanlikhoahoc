@@ -18,6 +18,8 @@ public class EmailHistoryService {
     private TeacherRepository teacherRepository;
     @Autowired
     private EmailService emailService;  // 💌 Thêm service gửi email
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     public List<EmailHistory> getAllEmailHistory() {
         return emailHistoryRepository.findAll();
@@ -81,6 +83,12 @@ public class EmailHistoryService {
         } else {
             throw new RuntimeException("Không tìm thấy lịch sử email với ID: " + id);
         }
+    }
+    public void sendScoreReportByEnrollment(int enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bản đăng ký với ID: " + enrollmentId));
+
+        emailService.sendScoreReport(enrollment);
     }
 }
 

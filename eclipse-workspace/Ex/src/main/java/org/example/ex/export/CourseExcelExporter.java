@@ -19,7 +19,7 @@ public class CourseExcelExporter {
         workbook = new XSSFWorkbook();
     }
 
-    // 🎯 Tạo tiêu đề cột
+    //  Tạo tiêu đề cột
     private void writeHeaderRow() {
         sheet = workbook.createSheet("Courses");
         Row row = sheet.createRow(0);
@@ -40,7 +40,7 @@ public class CourseExcelExporter {
         }
     }
 
-    // 🎯 Ghi dữ liệu khóa học vào các dòng tiếp theo
+    //  Ghi dữ liệu khóa học vào các dòng tiếp theo
     private void writeDataRows() {
         int rowCount = 1;
         CellStyle style = workbook.createCellStyle();
@@ -55,13 +55,13 @@ public class CourseExcelExporter {
             row.createCell(3).setCellValue(course.getTopic() != null ? course.getTopic().getName() : "");
         }
 
-        // 📏 Tự động điều chỉnh độ rộng cột
+        //  Tự động điều chỉnh độ rộng cột
         for (int i = 0; i < 4; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    // 📤 Xuất file Excel qua response HTTP
+    //  Xuất file Excel qua response HTTP
     public void export(HttpServletResponse response) throws IOException {
         writeHeaderRow();
         writeDataRows();

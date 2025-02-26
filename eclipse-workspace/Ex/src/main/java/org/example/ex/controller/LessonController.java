@@ -5,6 +5,7 @@ import org.example.ex.entity.*;
 import org.example.ex.export.LessonExcelExporter;
 import org.example.ex.repository.LessonRepository;
 import org.example.ex.service.CourseService;
+import org.example.ex.service.LessonImportService;
 import org.example.ex.service.LessonService;
 import org.example.ex.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class LessonController {
 
     @Autowired
     private LessonRepository lessonRepository;
+    @Autowired
+    private LessonImportService lessonImportService;
 
     // Lấy tất cả chủ đề
     @GetMapping
@@ -37,6 +40,12 @@ public class LessonController {
     @PostMapping
     public ResponseEntity<Lesson> addLesson(@RequestBody Lesson lesson) {
         return ResponseEntity.ok(lessonService.addLesson(lesson));
+    }
+
+    @PostMapping("/import")
+    public String importLessonsFromExcel(@RequestParam String filePath) {
+        lessonImportService.importLessonsFromExcel(filePath);
+        return "✅ Import file Excel thành công!";
     }
 
     // Cập nhật thông tin chủ đề

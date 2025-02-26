@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>👨‍🏫 Quản lý Giáo viên</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    input, button { padding: 8px; margin: 5px; }
+    #teacher-form { margin-bottom: 20px; }
+    .btn { cursor: pointer; border: none; border-radius: 5px; padding: 8px 12px; }
+    .btn-add { background-color: #4CAF50; color: white; }
+    .btn-delete { background-color: #f44336; color: white; }
+    .btn-update { background-color: #2196F3; color: white; }
+    .btn-export { background-color: #FF9800; color: white; }
+    .btn-import { background-color: #9C27B0; color: white; }
+  </style>
+</head>
+<body>
+
+<h2>👨‍🏫 Quản lý Giáo viên</h2>
+
+<div id="teacher-form">
+  <input type="text" id="teacherId" placeholder="ID (nếu cập nhật)">
+  <input type="text" id="name" placeholder="Tên giáo viên">
+  <input type="text" id="email" placeholder="Email">
+  <button class="btn btn-add" onclick="addOrUpdateTeacher()">💾 Lưu</button>
+</div>
+
+<button class="btn btn-export" onclick="exportExcel()">📤 Xuất Excel</button>
+<input type="file" id="excelFile">
+<button class="btn btn-import" onclick="importExcel()">📥 Import Excel</button>
+
+<table id="teachersTable">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>👤 Tên</th>
+    <th>📧 Email</th>
+    <th>📚 Khoá học phụ trách</th>
+    <th>🛠️ Thao tác</th>
+  </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  const apiBaseUrl = "/teachers";
+
+  // 📜 Lấy danh sách giáo viên
+  async function loadTeachers() {
+    const response = await fetch(apiBaseUrl);
+    const teachers = await response.json();
+    const tbody = document.querySelector("#teachersTable tbody");
+    tbody.innerHTML = "";
+
+    for (const teacher of teachers) {
+      const coursesResponse = await fetch(`${apiBaseUrl}/${teacher.id}/courses`);
+      const courses = await coursesResponse.json();
+      const courseNames = courses.map(course => course.name).join(", ") || "Chưa có";
+
+      const row = `<tr>
+                    <td>${teacher.id}</td>
+                    <td>${teacher.name}</td>
+                    <td>${teacher.email}</td>
+                    <td>${courseNames}</td>
+                    <td>
+                        <button class="btn btn-update" onclick="editTeacher(${teacher.id}, '${teacher.name}', '${teacher.email}')">✏️ Sửa</button>
+                        <button class="btn btn-delete" onclick="deleteTeacher(${teacher.id})">🗑️ Xóa</button>
+                    </td>
+                </tr>`;
+      tbody.innerHTML += row;
+    }
+  }
+
+  // ➕ Thêm hoặc 📝 Cập nhật giáo viên
+  async function addOrUpdateTeacher() {
+    const id = document.getElementById("teacherId").value;
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+
+    const method = id ? "PUT" : "POST";
+    const url = id ? `${apiBaseUrl}/${id}` : apiBaseUrl;
+
+    const response = await fetch(url, {
+      method: method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email })
+    });
+
+    if (response.ok) {
+      alert(id ? "📝 Cập nhật giáo viên thành công!" : "✅ Thêm giáo viên thành công!");
+      loadTeachers();
+      document.getElementById("teacherId").value = "";
+      document.getElementById("name").value = "";
+      document.getElementById("email").value = "";
+    } else {
+      alert("❌ Thao tác thất bại!");
+    }
+  }
+
+  // 📝 Chỉnh sửa thông tin giáo viên
+  function editTeacher(id, name, email) {
+    document.getElementById("teacherId").value = id;
+    document.getElementById("name").value = name;
+    document.getElementById("email").value = email;
+  }
+
+  // ❌ Xóa giáo viên
+  async function deleteTeacher(id) {
+    if (confirm("🗑️ Bạn có chắc chắn muốn xóa giáo viên này không?")) {
+      const response = await fetch(`${apiBaseUrl}/${id}`, { method: "DELETE" });
+      if (response.ok) {
+        alert("🗑️ Xóa thành công!");
+        loadTeachers();
+      } else {
+        alert("❌ Xóa thất bại!");
+      }
+    }
+  }
+
+  // 📤 Xuất file Excel
+  function exportExcel() {
+    window.location.href = `${apiBaseUrl}/export/excel`;
+  }
+
+  // 📥 Import file Excel
+  async function importExcel() {
+    const fileInput = document.getElementById("excelFile");
+    const file = fileInput.files[0];
+    if (!file) return alert("❌ Vui lòng chọn file Excel!");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${apiBaseUrl}/import?filePath=C://Users//Hiep Phuong//Desktop//${file.name}`, {
+      method: "POST"
+    });
+
+    if (response.ok) {
+      alert("✅ Import file Excel thành công!");
+      loadTeachers();
+    } else {
+      alert("❌ Import thất bại!");
+    }
+  }
+
+  // 📜 Load danh sách giáo viên khi trang được tải
+  window.onload = loadTeachers;
+</script>
+</body>
+</html>

@@ -31,7 +31,6 @@ public class LessonService {
             Lesson existingLesson = optionalLesson.get();
             existingLesson.setDescription(updateLesson.getDescription());
             updateLesson.setName(updateLesson.getName());
-            updateLesson.setScore(updateLesson.getScore());
             return lessonRepository.save(existingLesson);
         } else {
             throw new RuntimeException("Không tìm thấy bai hoc với ID: " + id);

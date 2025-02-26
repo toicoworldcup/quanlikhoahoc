@@ -1,8 +1,13 @@
 package org.example.ex.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name="enrollment")
 public class Enrollment {
@@ -17,6 +22,10 @@ public class Enrollment {
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
+    @OneToMany(mappedBy = "enrollment")
+    private List<Score> scores;
+
+
 
     public Enrollment(Course course, LocalDate enrollment_date, Student student) {
         this.course = course;
@@ -26,6 +35,14 @@ public class Enrollment {
 
     public Enrollment() {
 
+    }
+
+    public List<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(List<Score> scores) {
+        this.scores = scores;
     }
 
     public Course getCourse() {
