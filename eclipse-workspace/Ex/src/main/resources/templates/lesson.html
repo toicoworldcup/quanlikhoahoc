@@ -48,7 +48,9 @@
         </form>
         <hr>
         <button class="btn btn-primary btn-custom mb-3" id="exportExcel">📤 Xuất Excel</button>
-        <button class="btn btn-secondary btn-custom mb-3" id="importExcel">📥 Nhập từ Excel</button>
+        <input type="file" id="excelFile" class="form-control mb-2">
+        <button class="btn btn-secondary btn-custom mb-3" onclick="importExcel()">📥 Nhập từ Excel</button>
+
         <table class="table table-hover mt-3 text-center">
             <thead class="table-dark">
             <tr>
@@ -102,15 +104,34 @@
         window.location.href = `${apiUrl}/export/excel`;
     });
 
-    document.getElementById("importExcel").addEventListener("click", async () => {
-        const filePath = prompt("Nhập đường dẫn file Excel:");
-        if (filePath) {
-            const res = await fetch(`${apiUrl}/import?filePath=${filePath}`, { method: 'POST' });
-            const msg = await res.text();
-            alert(msg);
-            loadLessons();
+    async function importExcel() {
+        const fileInput = document.getElementById("excelFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("❌ Vui lòng chọn file Excel!");
+            return;
         }
-    });
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("http://localhost:8080/lessons/import", {
+                method: "POST",
+                body: formData, // ✅ Không cần headers, trình duyệt sẽ tự đặt Content-Type
+            });
+
+            const message = await response.text();
+            alert(message);
+            loadLessons(); // 🔄 Refresh lại danh sách sau khi import thành công
+        } catch (error) {
+            console.error("Lỗi khi import:", error);
+            alert("❌ Import thất bại!");
+        }
+    }
+
+
 
     async function loadLessons() {
         const res = await fetch(apiUrl);

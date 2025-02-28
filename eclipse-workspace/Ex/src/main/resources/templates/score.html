@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>🎯 Quản lý Điểm số</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    input, button { padding: 8px; margin: 5px; }
+    #score-form { margin-bottom: 20px; }
+    .btn { cursor: pointer; border: none; border-radius: 5px; padding: 8px 12px; }
+    .btn-add { background-color: #4CAF50; color: white; }
+    .btn-delete { background-color: #f44336; color: white; }
+    .btn-update { background-color: #2196F3; color: white; }
+  </style>
+</head>
+<body>
+
+<h2>🎯 Quản lý Điểm số</h2>
+
+<form id="score-form">
+  <input type="number" id="enrollmentId" placeholder="ID Đăng ký" required>
+  <input type="number" id="lessonId" placeholder="ID Bài học" required>
+  <input type="number" id="score" placeholder="Điểm số" required>
+  <button type="button" class="btn btn-add" onclick="addScore()">Thêm điểm</button>
+</form>
+
+<table id="scoresTable">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>🎓 Tên Sinh viên</th>
+    <th>📚 Tên Khóa học</th>
+    <th>📖 Tên Bài học</th>
+    <th>🏆 Điểm số</th>
+    <th>⚙️ Hành động</th>
+  </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  const apiBaseUrl = "/scores";
+
+  async function loadScores() {
+    const response = await fetch(apiBaseUrl);
+    const scores = await response.json();
+    const tbody = document.querySelector("#scoresTable tbody");
+    tbody.innerHTML = "";
+
+    scores.forEach(score => {
+      const row = `<tr>
+                    <td>${score.id}</td>
+                    <td>${score.enrollment.student.name}</td>
+                    <td>${score.enrollment.course.name}</td>
+                    <td>${score.lesson.name}</td>
+                    <td>${score.score}</td>
+                    <td>
+                        <button class='btn btn-update' onclick='editScore(${score.id}, ${score.score})'>Sửa</button>
+                        <button class='btn btn-delete' onclick='deleteScore(${score.id})'>Xóa</button>
+                    </td>
+                </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+
+  async function addScore() {
+    const enrollmentId = document.getElementById("enrollmentId").value;
+    const lessonId = document.getElementById("lessonId").value;
+    const score = document.getElementById("score").value;
+
+    const response = await fetch(`${apiBaseUrl}/enrollment/${enrollmentId}/lesson/${lessonId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ score })
+    });
+
+    if (response.ok) {
+      loadScores();
+    }
+  }
+
+  function editScore(id, currentScore) {
+    const newScore = prompt("Nhập điểm mới:", currentScore);
+    if (newScore !== null) {
+      updateScore(id, newScore);
+    }
+  }
+
+  async function updateScore(id, newScore) {
+    await fetch(`${apiBaseUrl}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ score: newScore })
+    });
+    loadScores();
+  }
+
+  async function deleteScore(id) {
+    await fetch(`${apiBaseUrl}/${id}`, { method: "DELETE" });
+    loadScores();
+  }
+
+  window.onload = loadScores;
+</script>
+</body>
+</html>

@@ -27,10 +27,9 @@ public class Lesson {
 
 
 
-    public Lesson(Course course, String description, int id, String name) {
+    public Lesson(Course course, String description, String name) {
         this.course = course;
         this.description = description;
-        this.id = id;
         this.name = name;
     }
 

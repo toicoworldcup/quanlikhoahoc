@@ -8,6 +8,7 @@ import org.example.ex.repository.CourseRepository;
 import org.example.ex.repository.LessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,8 +18,12 @@ import java.io.InputStream;
 public class LessonImportService {
     @Autowired
     private LessonRepository lessonRepository;
-    public void importLessonsFromExcel(String filePath) {
-        try (InputStream inputStream = new FileInputStream(filePath);
+
+    @Autowired
+    private CourseRepository courseRepository; // Thêm repository của Course
+
+    public void importLessonsFromExcel(MultipartFile file) {
+        try (InputStream inputStream = file.getInputStream(); // ✅ Sửa lỗi ở đây
              Workbook workbook = new XSSFWorkbook(inputStream)) {
 
             Sheet sheet = workbook.getSheetAt(0); // Lấy sheet đầu tiên
@@ -29,6 +34,16 @@ public class LessonImportService {
                 lesson.setName(getCellValue(row.getCell(0)));
                 lesson.setDescription(getCellValue(row.getCell(1)));
 
+                // Lấy courseId từ Excel và tìm Course trong database
+                Integer courseId = (int) getDoubleValue(row.getCell(2));
+                Course course = courseRepository.findById(courseId).orElse(null);
+
+                if (course == null) {
+                    System.err.println("❌ Không tìm thấy Course với ID: " + courseId);
+                    continue; // Bỏ qua nếu không tìm thấy khóa học
+                }
+
+                lesson.setCourse(course);
                 lessonRepository.save(lesson);
             }
             System.out.println("✅ Import dữ liệu từ Excel thành công!");
@@ -36,6 +51,8 @@ public class LessonImportService {
             System.err.println("❌ Lỗi khi import file Excel: " + e.getMessage());
         }
     }
+
+
     private double getDoubleValue(Cell cell) {
         if (cell == null) return 0.0;
         if (cell.getCellType() == CellType.NUMERIC) return cell.getNumericCellValue();
@@ -49,7 +66,6 @@ public class LessonImportService {
         }
         return 0.0;
     }
-
 
     private String getCellValue(Cell cell) {
         if (cell == null) return "";

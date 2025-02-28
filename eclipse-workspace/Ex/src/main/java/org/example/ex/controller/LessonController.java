@@ -11,6 +11,7 @@ import org.example.ex.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -43,9 +44,13 @@ public class LessonController {
     }
 
     @PostMapping("/import")
-    public String importLessonsFromExcel(@RequestParam String filePath) {
-        lessonImportService.importLessonsFromExcel(filePath);
-        return "✅ Import file Excel thành công!";
+    public ResponseEntity<String> importLessonsFromExcel(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("❌ Không có file nào được gửi!");
+        }
+
+        lessonImportService.importLessonsFromExcel(file);
+        return ResponseEntity.ok("✅ Import file Excel thành công!");
     }
 
     // Cập nhật thông tin chủ đề

@@ -39,6 +39,9 @@
             <div class="col-md-8">
                 <input type="text" id="topicName" class="form-control" placeholder="Tên chủ đề" required>
             </div>
+            <div class="col-md-8">
+                <textarea id="topicDescription" class="form-control" placeholder="Mô tả chủ đề" required></textarea>
+            </div>
             <div class="col-md-4 d-grid">
                 <button type="submit" class="btn btn-success btn-custom" id="submitBtn">➕ Thêm Chủ đề</button>
             </div>
@@ -49,6 +52,7 @@
             <tr>
                 <th>ID</th>
                 <th>Tên Chủ đề</th>
+                <th>Mô tả</th>
                 <th>Khóa học</th>
                 <th>Học viên</th>
                 <th>Hành động</th>
@@ -72,14 +76,17 @@
     document.getElementById("topicForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const topicName = document.getElementById("topicName").value.trim();
+        const topicDescription = document.getElementById("topicDescription").value.trim();
         const topicId = document.getElementById("topicId").value;
 
-        if (topicName) {
+        if (topicName && topicDescription) {
+            const topicData = { name: topicName, description: topicDescription };
+
             if (isEditing) {
                 await fetch(`${apiUrl}/${topicId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: topicName })
+                    body: JSON.stringify(topicData)
                 });
                 isEditing = false;
                 document.getElementById("submitBtn").textContent = "➕ Thêm Chủ đề";
@@ -87,56 +94,63 @@
                 await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: topicName })
+                    body: JSON.stringify(topicData)
                 });
             }
             document.getElementById("topicName").value = "";
+            document.getElementById("topicDescription").value = "";
             document.getElementById("topicId").value = "";
             loadTopics();
         }
     });
+
 
     async function loadTopics() {
         const res = await fetch(apiUrl);
         const topics = await res.json();
         const table = document.getElementById("topicTable");
         table.innerHTML = topics.map(t => `
-                <tr>
-                    <td>${t.id}</td>
-                    <td>${t.name}</td>
-                    <td><button class="btn btn-info btn-sm btn-custom" onclick="viewCourses(${t.id})">📚 Xem Khóa học</button></td>
-                    <td><button class="btn btn-secondary btn-sm btn-custom" onclick="viewStudents(${t.id})">👨‍🎓 Xem Học viên</button></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm btn-custom" onclick="editTopic(${t.id}, '${t.name}')">✏️ Sửa</button>
-                        <button class="btn btn-danger btn-sm btn-custom" onclick="deleteTopic(${t.id})">🗑 Xóa</button>
-                    </td>
-                </tr>`).join('');
+            <tr>
+                <td>${t.id}</td>
+                <td>${t.name}</td>
+                <td>${t.description}</td>
+                <td><button class="btn btn-info btn-sm btn-custom" onclick="viewCourses(${t.id})">📚 Xem Khóa học</button></td>
+                <td><button class="btn btn-secondary btn-sm btn-custom" onclick="viewStudents(${t.id})">👨‍🎓 Xem Học viên</button></td>
+                <td>
+                    <button class="btn btn-warning btn-sm btn-custom" onclick="editTopic(${t.id}, '${t.name}', '${t.description}')">✏️ Sửa</button>
+                    <button class="btn btn-danger btn-sm btn-custom" onclick="deleteTopic(${t.id})">🗑 Xóa</button>
+                </td>
+            </tr>`).join('');
     }
 
+
+    async function viewCourses(topicId) {
+        const res = await fetch(`/topics/${topicId}/courses`);
+        const courses = await res.json();
+        let content = `<h4>Danh sách khóa học</h4><table class='table'><tr><th>ID</th><th>Tên khóa học</th></tr>`;
+        courses.forEach(course => {
+            content += `<tr><td>${course.id}</td><td>${course.name}</td></tr>`;
+        });
+        content += `</table>`;
+        document.getElementById("topicTable").innerHTML = content;
+    }
     function editTopic(id, name) {
         document.getElementById("topicId").value = id;
         document.getElementById("topicName").value = name;
-        document.getElementById("submitBtn").textContent = "💾 Lưu";
+        document.getElementById("submitBtn").textContent = "💾 Cập nhật Chủ đề";
         isEditing = true;
     }
 
-    async function deleteTopic(id) {
-        if (confirm("Bạn có chắc muốn xóa chủ đề này?")) {
-            await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
-            loadTopics();
-        }
-    }
-
-    async function viewCourses(topicId) {
-        const res = await fetch(`${apiUrl}/${topicId}/courses`);
-        const courses = await res.json();
-        alert("📚 Khóa học:\n" + courses.map(c => c.name).join("\n"));
-    }
 
     async function viewStudents(topicId) {
-        const res = await fetch(`${apiUrl}/${topicId}/students`);
+        const res = await fetch(`/topics/${topicId}/students`);
         const students = await res.json();
-        alert("👨‍🎓 Học viên:\n" + students.map(s => s.name).join("\n"));
+        let content = `<h4>Danh sách học viên</h4><table class='table'><tr><th>ID</th><th>Tên học viên</th></tr>`;
+        students.forEach(student => {
+            content += `<tr><td>${student.id}</td><td>${student.name}</td></tr>`;
+        });
+        content += `</table>`;
+        document.getElementById("topicTable").innerHTML = content;
     }
 
     function exportExcel() {

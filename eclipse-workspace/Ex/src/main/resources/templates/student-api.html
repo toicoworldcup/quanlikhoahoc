@@ -25,7 +25,10 @@
 <div id="student-form">
     <input type="text" id="studentId" placeholder="ID (nếu cập nhật)">
     <input type="text" id="name" placeholder="Tên sinh viên">
-    <input type="text" id="email" placeholder="Email">
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="phone" placeholder="Số điện thoại">
+    <input type="date" id="dob" placeholder="Ngày sinh">
+    <input type="text" id="address" placeholder="Địa chỉ">
     <button class="btn btn-add" onclick="addOrUpdateStudent()">💾 Lưu</button>
 </div>
 
@@ -39,6 +42,9 @@
         <th>ID</th>
         <th>👤 Tên</th>
         <th>📧 Email</th>
+        <th>📞 Số điện thoại</th>
+        <th>🎂 Ngày sinh</th>
+        <th>🏠 Địa chỉ</th>
         <th>🛠️ Thao tác</th>
     </tr>
     </thead>
@@ -60,8 +66,11 @@
                     <td>${student.id}</td>
                     <td>${student.name}</td>
                     <td>${student.email}</td>
+                    <td>${student.phone}</td>
+                    <td>${student.dateOfBirth}</td>
+                    <td>${student.address}</td>
                     <td>
-                        <button class="btn btn-update" onclick="editStudent(${student.id}, '${student.name}', '${student.email}')">✏️ Sửa</button>
+                        <button class="btn btn-update" onclick="editStudent(${student.id}, '${student.name}', '${student.email}', '${student.phone}', '${student.dateOfBirth}', '${student.address}')">✏️ Sửa</button>
                         <button class="btn btn-delete" onclick="deleteStudent(${student.id})">🗑️ Xóa</button>
                     </td>
                 </tr>`;
@@ -74,6 +83,9 @@
         const id = document.getElementById("studentId").value;
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+        const dateOfBirth = document.getElementById("dob").value;
+        const address = document.getElementById("address").value;
 
         const method = id ? "PUT" : "POST";
         const url = id ? `${apiBaseUrl}/${id}` : apiBaseUrl;
@@ -81,24 +93,25 @@
         const response = await fetch(url, {
             method: method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email })
+            body: JSON.stringify({ name, email, phone, dateOfBirth, address })
         });
         if (response.ok) {
             alert(id ? "📝 Cập nhật thành công!" : "✅ Thêm sinh viên thành công!");
             loadStudents();
-            document.getElementById("studentId").value = "";
-            document.getElementById("name").value = "";
-            document.getElementById("email").value = "";
+            document.getElementById("student-form").reset();
         } else {
             alert("❌ Thao tác thất bại!");
         }
     }
 
     // 📝 Chỉnh sửa sinh viên
-    function editStudent(id, name, email) {
+    function editStudent(id, name, email, phone, dateOfBirth, address) {
         document.getElementById("studentId").value = id;
         document.getElementById("name").value = name;
         document.getElementById("email").value = email;
+        document.getElementById("phone").value = phone;
+        document.getElementById("dob").value = dateOfBirth;
+        document.getElementById("address").value = address;
     }
 
     // ❌ Xóa sinh viên
@@ -123,19 +136,25 @@
     async function importExcel() {
         const fileInput = document.getElementById("excelFile");
         const file = fileInput.files[0];
-        if (!file) return alert("❌ Vui lòng chọn file Excel!");
 
-        // Lấy đường dẫn tệp từ input file (chỉ chính xác khi upload từ server hoặc sử dụng API phù hợp)
-        const filePath = `C://Users//Hiep Phuong//Desktop//${file.name}`;
+        if (!file) {
+            alert("❌ Vui lòng chọn file Excel!");
+            return;
+        }
 
-        const response = await fetch(`${apiBaseUrl}/import?filePath=${encodeURIComponent(filePath)}`, {
-            method: "POST"
-        });
+        const formData = new FormData();
+        formData.append("file", file);
 
-        if (response.ok) {
-            alert("✅ Import file Excel thành công!");
-            loadStudents();
-        } else {
+        try {
+            const response = await fetch("http://localhost:8080/students/import", {
+                method: "POST",
+                body: formData, // ✅ Không cần headers, trình duyệt sẽ tự đặt Content-Type
+            });
+
+            const message = await response.text();
+            alert(message);
+        } catch (error) {
+            console.error("Lỗi khi import:", error);
             alert("❌ Import thất bại!");
         }
     }

@@ -30,12 +30,13 @@ public class LessonService {
         if (optionalLesson.isPresent()) {
             Lesson existingLesson = optionalLesson.get();
             existingLesson.setDescription(updateLesson.getDescription());
-            updateLesson.setName(updateLesson.getName());
+            existingLesson.setName(updateLesson.getName()); // Sửa lỗi tại đây
             return lessonRepository.save(existingLesson);
         } else {
-            throw new RuntimeException("Không tìm thấy bai hoc với ID: " + id);
+            throw new RuntimeException("Không tìm thấy bài học với ID: " + id);
         }
     }
+
     public void deleteLesson(int id) {
         Optional<Lesson> optionalLesson = lessonRepository.findById(id);
         if (optionalLesson.isPresent()) {

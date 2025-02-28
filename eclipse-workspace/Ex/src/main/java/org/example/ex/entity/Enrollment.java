@@ -1,6 +1,8 @@
 package org.example.ex.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ public class Enrollment {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
     @OneToMany(mappedBy = "enrollment")
+    @JsonIgnore
     private List<Score> scores;
 
 

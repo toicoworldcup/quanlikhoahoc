@@ -1,6 +1,8 @@
 package org.example.ex.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,16 +13,12 @@ public class Score {
     private Integer id;
     @ManyToOne
     @JoinColumn(name = "enrollment_id")
-    @JsonIgnore
     private Enrollment enrollment;
-
     @ManyToOne
     @JoinColumn(name = "lesson_id")
-    @JsonIgnore
     private Lesson lesson;
     @Column(name="scored")
     private Double score;
-
     public Score() {
     }
 

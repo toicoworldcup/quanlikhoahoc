@@ -31,7 +31,7 @@ public class LessonExcelExporter {
         style.setFont(font);
         style.setAlignment(HorizontalAlignment.CENTER);
 
-        String[] headers = {"ID", "Name", "Description", "Score", "Course ID"};
+        String[] headers = {"ID", "Name", "Description",  "Course ID"};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(headers[i]);
@@ -46,7 +46,7 @@ public class LessonExcelExporter {
             row.createCell(0).setCellValue(lesson.getId());
             row.createCell(1).setCellValue(lesson.getName());
             row.createCell(2).setCellValue(lesson.getDescription());
-            row.createCell(4).setCellValue(
+            row.createCell(3).setCellValue(
                     lesson.getCourse() != null ? lesson.getCourse().getId() : null
             );
         }
@@ -56,7 +56,7 @@ public class LessonExcelExporter {
         writeHeaderRow();
         writeDataRows();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
             sheet.autoSizeColumn(i);
         }
 

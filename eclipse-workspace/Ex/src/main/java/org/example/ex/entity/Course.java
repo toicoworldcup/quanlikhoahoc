@@ -1,6 +1,8 @@
     package org.example.ex.entity;
 
+    import com.fasterxml.jackson.annotation.JsonBackReference;
     import com.fasterxml.jackson.annotation.JsonIgnore;
+    import com.fasterxml.jackson.annotation.JsonManagedReference;
     import jakarta.persistence.*;
 
     import java.util.Calendar;
@@ -24,6 +26,7 @@
         @JsonIgnore
         private Set<Enrollment> enrollments = new HashSet<>();
         @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JsonIgnore
         private Set<Lesson> lessons = new HashSet<>();
         @ManyToMany(mappedBy = "courses")
         @JsonIgnore

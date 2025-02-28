@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -56,9 +57,13 @@ public class StudentController {
     }
 
     @PostMapping("/import")
-    public String importStudentsFromExcel(@RequestParam String filePath) {
-        studentImportService.importStudentsFromExcel(filePath);
-        return "✅ Import file Excel thành công!";
+    public ResponseEntity<String> importStudentsFromExcel(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("❌ Không có file nào được gửi!");
+        }
+
+        studentImportService.importStudentsFromExcel(file);
+        return ResponseEntity.ok("✅ Import file Excel thành công!");
     }
 
 

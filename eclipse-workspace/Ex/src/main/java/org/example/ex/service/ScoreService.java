@@ -8,9 +8,8 @@ import org.example.ex.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ScoreService {
@@ -41,14 +40,16 @@ public class ScoreService {
         Optional<Score> optionalScore = scoreRepository.findById(id);
         if (optionalScore.isPresent()) {
             Score existingScore = optionalScore.get();
-            existingScore.setEnrollment(updatedScore.getEnrollment());
-            existingScore.setLesson(updatedScore.getLesson());
+
+
+            existingScore.setScore(updatedScore.getScore());
 
             return scoreRepository.save(existingScore);
         } else {
-            throw new RuntimeException("Không tìm thấy ban ghi diem với ID: " + id);
+            throw new RuntimeException("Không tìm thấy bản ghi điểm với ID: " + id);
         }
     }
+
     public void deleteScore(int id) {
         Optional<Score> optionalScore = scoreRepository.findById(id);
         if (optionalScore.isPresent()) {
@@ -77,6 +78,29 @@ public class ScoreService {
         return enrollments.stream()
                 .flatMap(enrollment -> enrollment.getScores().stream())
                 .toList();
+    }
+    public List<Map<String, Object>> getScoresByStudentName(String studentName) {
+        List<Object[]> results = scoreRepository.findScoresByStudentName(studentName);
+
+        return results.stream().map(row -> {
+            Map<String, Object> scoreData = new HashMap<>();
+            scoreData.put("score", row[0]);   // Điểm số
+            scoreData.put("student", row[1]); // Tên học sinh
+            scoreData.put("lesson", row[2]);  // Tên bài học
+            scoreData.put("course", row[3]);  // Tên khóa học
+            return scoreData;
+        }).collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> getStudentsWithAllScoresAboveSix(String courseName) {
+        List<Object[]> results = scoreRepository.findStudentsWithAllScoresAboveSix(courseName);
+
+        return results.stream().map(row -> {
+            Map<String, Object> studentData = new HashMap<>();
+            studentData.put("id", row[0]);
+            studentData.put("name", row[1]);
+            return studentData;
+        }).collect(Collectors.toList());
     }
 
 

@@ -19,6 +19,8 @@ public class CourseService {
     private TeacherRepository teacherRepository;
     @Autowired
     private LessonRepository lessonRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -31,8 +33,8 @@ public class CourseService {
         if (optionalCourse.isPresent()) {
             Course existingCourse = optionalCourse.get();
             existingCourse.setDescription(updatedCourse.getDescription());
-            updatedCourse.setName(updatedCourse.getName());
-            updatedCourse.setTopic(updatedCourse.getTopic());
+            existingCourse.setName(updatedCourse.getName());
+            existingCourse.setTopic(updatedCourse.getTopic());
             return courseRepository.save(existingCourse);
         } else {
             throw new RuntimeException("Không tìm thấy khoa hoc với ID: " + id);
@@ -76,6 +78,7 @@ public class CourseService {
         courseRepository.save(course);
         return course;
     }
+
 
     public Course addLessonToCourse(int courseId, int lessonId) {
         Course course = courseRepository.findById(courseId)

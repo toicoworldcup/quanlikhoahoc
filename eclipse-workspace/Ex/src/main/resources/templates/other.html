@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html lang="vi">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tra cứu điểm học sinh</title>
+    <script>
+        async function searchScoresByStudent() {
+            let studentName = document.getElementById("studentName").value;
+            let response = await fetch(`scores/student?studentName=${encodeURIComponent(studentName)}`);
+            let data = await response.json();
+            let resultDiv = document.getElementById("studentScoresResult");
+            resultDiv.innerHTML = "<h3>Kết quả:</h3>";
+            data.forEach(score => {
+                resultDiv.innerHTML += `<p><strong>${score.lesson}</strong> - Điểm: ${score.score} - Khoá học: ${score.course}</p>`;
+            });
+        }
+
+        async function searchStudentsAboveSix() {
+            let courseName = document.getElementById("courseName").value;
+            let response = await fetch(`scores/students-excellent?courseName=${encodeURIComponent(courseName)}`);
+            let data = await response.json();
+            let resultDiv = document.getElementById("studentsAboveSixResult");
+            resultDiv.innerHTML = "<h3>Danh sách học sinh xuất sắc:</h3>";
+            data.forEach(student => {
+                resultDiv.innerHTML += `<p>ID: ${student.id} - <strong>${student.name}</strong></p>`;
+            });
+        }
+    </script>
+</head>
+<body>
+<h2>Tra cứu điểm theo tên học sinh</h2>
+<input type="text" id="studentName" placeholder="Nhập tên học sinh">
+<button onclick="searchScoresByStudent()">Tìm kiếm</button>
+<div id="studentScoresResult"></div>
+
+<hr>
+
+<h2>Danh sách học sinh có điểm trên 6 cho tất cả bài học trong khoá</h2>
+<input type="text" id="courseName" placeholder="Nhập tên khoá học">
+<button onclick="searchStudentsAboveSix()">Tìm kiếm</button>
+<div id="studentsAboveSixResult"></div>
+</body>
+</html>
+</title>
+</head>
+<body>
+
+</body>
+</html>

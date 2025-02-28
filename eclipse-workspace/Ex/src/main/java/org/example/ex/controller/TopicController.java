@@ -36,13 +36,13 @@ public class TopicController {
     }
 
     // Thêm chủ đề mới
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<Topic> addTopic(@RequestBody Topic topic) {
         return ResponseEntity.ok(topicService.addTopic(topic));
     }
 
     // Cập nhật thông tin chủ đề
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Topic> updateTopic(@PathVariable int id, @RequestBody Topic topic) {
         return ResponseEntity.ok(topicService.updateTopic(id, topic));
     }
