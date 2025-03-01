@@ -18,8 +18,7 @@ public class StudentExcelExporter {
         this.students = students;
         workbook = new XSSFWorkbook();
     }
-
-    // 🎯 Tạo tiêu đề cột với font chữ hỗ trợ UTF-8
+    //ghi tieu de
     private void writeHeaderRow() {
         sheet = workbook.createSheet("Students");
         Row row = sheet.createRow(0);
@@ -28,7 +27,7 @@ public class StudentExcelExporter {
         Font font = workbook.createFont();
         font.setBold(true);
         font.setFontHeightInPoints((short) 14);
-        font.setFontName("Arial"); // Sử dụng Arial để hỗ trợ UTF-8
+        font.setFontName("Arial");
         style.setFont(font);
         style.setAlignment(HorizontalAlignment.CENTER);
 
@@ -40,30 +39,30 @@ public class StudentExcelExporter {
         }
     }
 
-    // 🎯 Ghi dữ liệu sinh viên vào các dòng tiếp theo
+    //  Ghi dữ liệu sinh viên vào file
     private void writeDataRows() {
         int rowCount = 1;
         CellStyle style = workbook.createCellStyle();
-        style.setWrapText(true);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);//xuong dong
+        style.setVerticalAlignment(VerticalAlignment.CENTER);//can chinh
 
         for (Student student : students) {
             Row row = sheet.createRow(rowCount++);
             row.createCell(0).setCellValue(student.getId());
             row.createCell(1).setCellValue(student.getName());
             row.createCell(2).setCellValue(student.getEmail());
-            row.createCell(3).setCellValue(student.getPhone());
+            row.createCell(3).setCellValue("'"+student.getPhone());
             row.createCell(4).setCellValue(student.getDateOfBirth().toString());
             row.createCell(5).setCellValue(student.getAddress());
         }
 
-        // 📏 Tự động điều chỉnh độ rộng cột
+        // điều chỉnh độ rộng cột
         for (int i = 0; i < 6; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    // 📤 Xuất file Excel qua response HTTP
+    // Xuất file Excel
     public void export(HttpServletResponse response) throws IOException {
         writeHeaderRow();
         writeDataRows();

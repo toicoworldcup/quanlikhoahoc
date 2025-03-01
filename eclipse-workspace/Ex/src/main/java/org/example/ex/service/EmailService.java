@@ -30,7 +30,7 @@ public class EmailService {
         );
         mailSender.send(message);
     }
-    // 📩 Gửi email danh sách điểm theo khóa học
+    //  Gửi email danh sách điểm theo khóa học
     public void sendScoreReport(Enrollment enrollment) {
         StringBuilder content = new StringBuilder();
         content.append(String.format("👋 Xin chào %s,\n\n", enrollment.getStudent().getName()));

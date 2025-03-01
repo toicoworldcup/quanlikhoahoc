@@ -32,7 +32,7 @@ public class CourseExcelExporter {
         style.setFont(font);
         style.setAlignment(HorizontalAlignment.CENTER);
 
-        String[] headers = {"ID", "Tên khóa học", "Mô tả", "Chủ đề"};
+        String[] headers = {"ID", "Tên khóa học", "Mô tả"};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(headers[i]);
@@ -40,7 +40,7 @@ public class CourseExcelExporter {
         }
     }
 
-    //  Ghi dữ liệu khóa học vào các dòng tiếp theo
+    //  Ghi dữ liệu khóa học
     private void writeDataRows() {
         int rowCount = 1;
         CellStyle style = workbook.createCellStyle();
@@ -52,23 +52,18 @@ public class CourseExcelExporter {
             row.createCell(0).setCellValue(course.getId());
             row.createCell(1).setCellValue(course.getName());
             row.createCell(2).setCellValue(course.getDescription() != null ? course.getDescription() : "");
-            row.createCell(3).setCellValue(course.getTopic() != null ? course.getTopic().getName() : "");
         }
 
-        //  Tự động điều chỉnh độ rộng cột
-        for (int i = 0; i < 4; i++) {
+        //  điều chỉnh độ rộng cột
+        for (int i = 0; i < 3; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    //  Xuất file Excel qua response HTTP
+    //  Xuất file Excel
     public void export(HttpServletResponse response) throws IOException {
         writeHeaderRow();
         writeDataRows();
-
-        for (int i = 0; i < 4; i++) {
-            sheet.autoSizeColumn(i);
-        }
 
         workbook.write(response.getOutputStream());
         workbook.close();

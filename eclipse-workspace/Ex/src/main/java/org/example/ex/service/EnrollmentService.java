@@ -29,19 +29,16 @@ public class EnrollmentService {
         if (optionalEnrollment.isPresent()) {
             Enrollment existingEnrollment = optionalEnrollment.get();
 
-            // 🔍 Kiểm tra Course
             Optional<Course> optionalCourse = courseRepository.findById(updateEnrollment.getCourse().getId());
             if (optionalCourse.isEmpty()) {
                 throw new RuntimeException("Không tìm thấy khóa học với ID: " + updateEnrollment.getCourse().getId());
             }
 
-            // 🔍 Kiểm tra Student
             Optional<Student> optionalStudent = studentRepository.findById(updateEnrollment.getStudent().getId());
             if (optionalStudent.isEmpty()) {
                 throw new RuntimeException(" Không tìm thấy sinh viên với ID: " + updateEnrollment.getStudent().getId());
             }
 
-            // ✅ Cập nhật nếu cả hai tồn tại
             existingEnrollment.setEnrollment_date(updateEnrollment.getEnrollment_date());
             existingEnrollment.setCourse(optionalCourse.get());
             existingEnrollment.setStudent(optionalStudent.get());

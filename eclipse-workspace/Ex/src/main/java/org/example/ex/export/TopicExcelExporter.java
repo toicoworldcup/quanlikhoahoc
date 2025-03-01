@@ -20,7 +20,7 @@ public class TopicExcelExporter {
         workbook = new XSSFWorkbook();
     }
 
-    // 🎯 Tạo tiêu đề cột
+    // Tạo tiêu đề cột
     private void writeHeaderRow() {
         sheet = workbook.createSheet("Topics");
         Row row = sheet.createRow(0);
@@ -41,7 +41,7 @@ public class TopicExcelExporter {
         }
     }
 
-    // 📝 Ghi dữ liệu các chủ đề vào các dòng
+    // Ghi dữ liệu các chủ đề vào các dòng
     private void writeDataRows() {
         int rowCount = 1;
 
@@ -52,20 +52,16 @@ public class TopicExcelExporter {
             row.createCell(1).setCellValue(topic.getName());
             row.createCell(2).setCellValue(topic.getDescription());
 
-            // 📚 Gộp danh sách tên khóa học bằng dấu phẩy
-            String courseList = topic.getCourses().stream()
-                    .map(Course::getName)
-                    .collect(Collectors.joining(", "));
-            row.createCell(3).setCellValue(courseList);
+
         }
 
-        // 📏 Tự động điều chỉnh độ rộng cột
+        //  điều chỉnh độ rộng cột
         for (int i = 0; i < 4; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    // 📤 Xuất file Excel thông qua response HTTP
+    // Xuất file Excel
     public void export(HttpServletResponse response) throws IOException {
         writeHeaderRow();
         writeDataRows();

@@ -51,7 +51,7 @@ public class TopicService {
         topic.getStudents().add(student);
         student.getTopics().add(topic);
 
-        topicRepository.save(topic);  // JPA sẽ tự động thêm dữ liệu vào bảng student_topic
+        topicRepository.save(topic);
         return topic;
     }
 

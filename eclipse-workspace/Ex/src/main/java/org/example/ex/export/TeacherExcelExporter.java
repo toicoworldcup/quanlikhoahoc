@@ -21,7 +21,7 @@ public class TeacherExcelExporter {
         workbook = new XSSFWorkbook();
     }
 
-    // 🎯 Tạo tiêu đề cột với font chữ hỗ trợ UTF-8
+
     private void writeHeaderRow() {
         sheet = workbook.createSheet("Teachers");
         Row row = sheet.createRow(0);
@@ -30,11 +30,11 @@ public class TeacherExcelExporter {
         Font font = workbook.createFont();
         font.setBold(true);
         font.setFontHeightInPoints((short) 14);
-        font.setFontName("Arial"); // Sử dụng Arial hỗ trợ UTF-8
+        font.setFontName("Arial");
         style.setFont(font);
         style.setAlignment(HorizontalAlignment.CENTER);
 
-        String[] headers = {"ID", "Họ và Tên", "Email", "Số điện thoại", "Mô tả", "Danh sách môn học"};
+        String[] headers = {"ID", "Họ và Tên", "Email", "Số điện thoại", "Mô tả"};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(headers[i]);
@@ -42,7 +42,7 @@ public class TeacherExcelExporter {
         }
     }
 
-    // 🎯 Ghi dữ liệu giáo viên vào các dòng tiếp theo
+    // Ghi dữ liệu giáo viên
     private void writeDataRows() {
         int rowCount = 1;
 
@@ -52,23 +52,17 @@ public class TeacherExcelExporter {
             row.createCell(0).setCellValue(teacher.getId());
             row.createCell(1).setCellValue(teacher.getName());
             row.createCell(2).setCellValue(teacher.getEmail());
-            row.createCell(3).setCellValue(teacher.getPhoneNumber());
+            row.createCell(3).setCellValue("'"+teacher.getPhoneNumber());
             row.createCell(4).setCellValue(teacher.getDescription());
-
-            // 📝 Lấy danh sách tên môn học cách nhau bởi dấu phẩy
-            String courseList = teacher.getCourses().stream()
-                    .map(Course::getName)
-                    .collect(Collectors.joining(", "));
-            row.createCell(5).setCellValue(courseList);
         }
 
-        // 📏 Tự động điều chỉnh độ rộng cột
+        //  điều chỉnh độ rộng cột
         for (int i = 0; i < 6; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    // 📤 Xuất file Excel qua response HTTP
+    // Xuất file Excel
     public void export(HttpServletResponse response) throws IOException {
         writeHeaderRow();
         writeDataRows();

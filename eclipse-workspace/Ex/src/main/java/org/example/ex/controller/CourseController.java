@@ -8,10 +8,13 @@ import org.example.ex.service.CourseImportService;
 import org.example.ex.service.CourseService;
 import org.example.ex.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,10 +34,21 @@ public class CourseController {
     private CourseImportService courseImportService;
 
     @PostMapping("/import")
-    public String importCoursesFromExcel(@RequestParam String filePath) {
-        courseImportService.importCoursesFromExcel(filePath);
-        return "✅ Import file Excel thành công!";
+    public ResponseEntity<String> importCourses(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("⚠️ File trống!");
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            courseImportService.importCoursesFromStream(inputStream);
+            return ResponseEntity.ok("✅ Import thành công!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("❌ Lỗi xử lý file!");
+        }
     }
+
+
 
     // Lấy tất cả chủ đề
     @GetMapping

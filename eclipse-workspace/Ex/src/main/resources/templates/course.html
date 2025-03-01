@@ -39,6 +39,9 @@
             <div class="col-md-8">
                 <input type="text" id="courseName" class="form-control" placeholder="Tên khóa học" required>
             </div>
+            <div class="col-md-6">
+                <input type="text" id="courseDescription" class="form-control" placeholder="Mô tả khóa học" required>
+            </div>
             <div class="col-md-4 d-grid">
                 <button type="submit" class="btn btn-success btn-custom" id="submitBtn">➕ Thêm Khóa học</button>
             </div>
@@ -70,14 +73,16 @@
     document.getElementById("courseForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const courseName = document.getElementById("courseName").value.trim();
+        const courseDescription = document.getElementById("courseDescription").value.trim();
+
         const courseId = document.getElementById("courseId").value;
 
-        if (courseName) {
+        if (courseName && courseDescription) {
             if (isEditing) {
                 await fetch(`${apiUrl}/${courseId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: courseName })
+                    body: JSON.stringify({ name: courseName, description: courseDescription })
                 });
                 isEditing = false;
                 document.getElementById("submitBtn").textContent = "➕ Thêm Khóa học";
@@ -85,10 +90,12 @@
                 await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: courseName })
+                    body: JSON.stringify({ name: courseName, description: courseDescription })
                 });
             }
             document.getElementById("courseName").value = "";
+            document.getElementById("courseDescription").value = "";
+
             document.getElementById("courseId").value = "";
             loadCourses();
         }
@@ -103,7 +110,7 @@
                     <td>${c.id}</td>
                     <td>${c.name}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm btn-custom" onclick="editCourse(${c.id}, '${c.name}')">✏️ Sửa</button>
+                        <button class="btn btn-warning btn-sm btn-custom" onclick="editCourse(${c.id}, '${c.name}','${c.description}')">✏️ Sửa</button>
                         <button class="btn btn-danger btn-sm btn-custom" onclick="deleteCourse(${c.id})">🗑 Xóa</button>
                         <button class="btn btn-info btn-sm btn-custom" onclick="viewLessons(${c.id})">📚 Xem Bài Học</button>
                         <button class="btn btn-secondary btn-sm btn-custom" onclick="viewTeachers(${c.id})">👨‍🏫 Xem Giáo Viên</button>
@@ -113,9 +120,10 @@
                 </tr>`).join('');
     }
 
-    function editCourse(id, name) {
+    function editCourse(id, name, description) {
         document.getElementById("courseId").value = id;
         document.getElementById("courseName").value = name;
+        document.getElementById("courseDescription").value = description;
         document.getElementById("submitBtn").textContent = "💾 Lưu";
         isEditing = true;
     }
@@ -165,11 +173,28 @@
         const file = this.files[0];
         if (file) {
             const formData = new FormData();
-            formData.append("filePath", file);
-            await fetch(`${apiUrl}/import`, { method: 'POST', body: formData });
-            loadCourses();
+            formData.append("file", file); // Đảm bảo key là "file" thay vì "filePath"
+
+            try {
+                const response = await fetch(`${apiUrl}/import`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert("✅ Nhập dữ liệu thành công!");
+                    loadCourses();
+                } else {
+                    const errorText = await response.text();
+                    alert(`❌ Lỗi nhập dữ liệu: ${errorText}`);
+                }
+            } catch (error) {
+                alert("❌ Lỗi khi gửi file lên server!");
+                console.error(error);
+            }
         }
     });
+
 </script>
 </body>
 </html>

@@ -29,6 +29,16 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
             "(SELECT sc.lesson.id FROM Score sc JOIN sc.enrollment e JOIN e.course c WHERE c.name = :courseName)) " +
             "AND MIN(sc.score) > 6")
     List<Object[]> findStudentsWithAllScoresAboveSix(@Param("courseName") String courseName);
+    //tim theo id hoc sinh
+
+    @Query("SELECT sc.score, s.name, l.name, c.name FROM Score sc " +
+            "LEFT JOIN sc.enrollment e " +
+            "LEFT JOIN e.student s " +
+            "LEFT JOIN e.course c " +
+            "LEFT JOIN sc.lesson l " +
+            "WHERE s.id = :studentId")
+    List<Object[]> findScoresByStudentId(@Param("studentId") Long studentId);
+
 }
 
 

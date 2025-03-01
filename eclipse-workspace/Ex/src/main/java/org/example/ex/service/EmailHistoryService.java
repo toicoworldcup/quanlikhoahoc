@@ -17,7 +17,7 @@ public class EmailHistoryService {
     @Autowired
     private TeacherRepository teacherRepository;
     @Autowired
-    private EmailService emailService;  // 💌 Thêm service gửi email
+    private EmailService emailService;
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
@@ -28,7 +28,7 @@ public class EmailHistoryService {
     public EmailHistory addEmailHistory(EmailHistory emailHistory) {
         String receiverEmail = emailHistory.getRecipientEmail();
 
-        // ✅ Kiểm tra email
+        // Kiểm tra email
         boolean isTeacherEmail = teacherRepository.existsByEmail(receiverEmail);
         boolean isStudentEmail = studentRepository.existsByEmail(receiverEmail);
 
@@ -36,10 +36,10 @@ public class EmailHistoryService {
             throw new IllegalArgumentException("Email người nhận không tồn tại trong hệ thống.");
         }
 
-        // ✅ Lưu dữ liệu
+        // Lưu dữ liệu
         EmailHistory savedEmail = emailHistoryRepository.save(emailHistory);
 
-        // 💌 Gửi email sau khi lưu
+        // Gửi email sau khi lưu
         emailService.sendEmail(savedEmail);
 
         return savedEmail;
@@ -59,7 +59,7 @@ public class EmailHistoryService {
                 throw new RuntimeException(" Email người nhận không tồn tại trong danh sách sinh viên hoặc giáo viên.");
             }
 
-            // ✅ Cập nhật thông tin
+            //  Cập nhật thông tin
             existingEmailHistory.setRecipientEmail(recipientEmail);
             existingEmailHistory.setTitle(updateEmailHistory.getTitle());
             existingEmailHistory.setContent(updateEmailHistory.getContent());
@@ -67,7 +67,6 @@ public class EmailHistoryService {
 
             EmailHistory updatedEmail = emailHistoryRepository.save(existingEmailHistory);
 
-            // 💌 Gửi lại email sau khi update
             emailService.sendEmail(updatedEmail);
 
             return updatedEmail;

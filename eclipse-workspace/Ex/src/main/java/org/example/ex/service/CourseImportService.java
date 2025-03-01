@@ -15,13 +15,12 @@ import java.io.InputStream;
 public class CourseImportService {
     @Autowired
     private CourseRepository courseRepository;
-    public void importCoursesFromExcel(String filePath) {
-        try (InputStream inputStream = new FileInputStream(filePath);
-             Workbook workbook = new XSSFWorkbook(inputStream)) {
+    public void importCoursesFromStream(InputStream inputStream) {
+        try (Workbook workbook = new XSSFWorkbook(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
 
-            Sheet sheet = workbook.getSheetAt(0); // Lấy sheet đầu tiên
             for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue; // Bỏ qua header
+                if (row.getRowNum() == 0) continue;
 
                 Course course = new Course();
                 course.setName(getCellValue(row.getCell(0)));
@@ -31,9 +30,10 @@ public class CourseImportService {
             }
             System.out.println("✅ Import dữ liệu từ Excel thành công!");
         } catch (IOException e) {
-            System.err.println("❌ Lỗi khi import file Excel: " + e.getMessage());
+            System.err.println("❌ Lỗi khi đọc file Excel: " + e.getMessage());
         }
     }
+
 
     private String getCellValue(Cell cell) {
         if (cell == null) return "";

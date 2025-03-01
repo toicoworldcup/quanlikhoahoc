@@ -23,9 +23,9 @@ public class StudentImportService {
         try (InputStream inputStream = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(inputStream)) {
 
-            Sheet sheet = workbook.getSheetAt(0); // Lấy sheet đầu tiên
+            Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue; // Bỏ qua header
+                if (row.getRowNum() == 0) continue;
 
                 Student student = new Student();
                 student.setName(getCellValue(row.getCell(0)));
